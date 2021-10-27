@@ -133,3 +133,38 @@ The Spring PetClinic sample application is released under version 2.0 of the [Ap
 [spring-petclinic-graphql]: https://github.com/spring-petclinic/spring-petclinic-graphql
 [spring-petclinic-kotlin]: https://github.com/spring-petclinic/spring-petclinic-kotlin
 [spring-petclinic-rest]: https://github.com/spring-petclinic/spring-petclinic-rest
+
+# Jenkins Pipeline Script
+
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                // Get some code from a GitHub repository
+                git branch: 'main', url: 'https://github.com/sinisin/petclinic.git'
+                // Run Maven on a Unix agent.
+               // sh "mvn -Dmaven.test.failure.ignore=true clean package"
+                // To run Maven on a Windows agent, use
+                bat 'mvn -Dmaven.test.failure.ignore=true -Dcheckstyle.skip clean install liquibase:update'
+            }
+            post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                    archiveArtifacts 'target/*.jar'
+                }
+            }
+        }
+        
+    }
+}
+
+# For Liquibase
+
+After importing proect into IntelliJ : 
+1. Add Liquibase plugin to pom.xml refer to 'liquibase-maven-plugin' in pom.xml
+2. Add liquibase.properties under src/main/resources/db and update the db connections details as per the db
+3. Add changelog.mysql.xml which contains the sql changes. 
+5. Execute 'mvn liquibase: update' to execute liquibase update. 
