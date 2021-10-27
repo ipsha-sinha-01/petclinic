@@ -62,4 +62,9 @@
             <column name="countrysql1" type="varchar(2)"/>
         </addColumn>
     </changeSet>
+    <changeSet id="8" author="other.dev">
+        <addColumn tableName="person">
+            <column name="countrysql_new1" type="varchar(2)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
